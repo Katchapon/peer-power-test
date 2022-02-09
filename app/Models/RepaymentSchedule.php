@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Loan extends Model
+class RepaymentSchedule extends Model
 {
     use HasFactory;
 
-    function RepaymentSchedules() {
-        return $this->hasMany('App\Model\RepaymentSchedule');
+    public function loan() {
+        return $this->belongsTo('App\Models\Loan');
     }
 }
