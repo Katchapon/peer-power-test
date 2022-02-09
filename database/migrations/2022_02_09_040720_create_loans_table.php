@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->decimal('loan_amount', 21, 6);
-            $table->integer('loan_term');
+            $table->unsignedInteger('loan_term');
             $table->decimal('interest_rate', 21, 6);
             $table->timestamps();
         });

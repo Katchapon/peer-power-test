@@ -9,7 +9,8 @@ class Loan extends Model
 {
     use HasFactory;
 
-    function RepaymentSchedules() {
-        return $this->hasMany('App\Model\RepaymentSchedule');
+    public function repaymentSchedules() 
+    {
+        return $this->hasMany(RepaymentSchedule::class);
     }
 }
