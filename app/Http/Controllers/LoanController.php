@@ -61,8 +61,9 @@ class LoanController extends Controller
                 'error' => $e->getMessage()()
             ];
 
-            return response()->json($result, $result['status']);
         }
+
+        return response()->json($result, $result['status']);
     }
 
     /**
@@ -71,31 +72,72 @@ class LoanController extends Controller
      * @param  \App\Models\Loan  $loan
      * @return \Illuminate\Http\Response
      */
-    // public function show(Loan $loan)
-    // {
-    //     //
-    // }
+    public function show($id)
+    {
+        $result = ['status' => 200];
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @param  \App\Models\Loan  $loan
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function update(Request $request, Loan $loan)
-    // {
-    //     //
-    // }
+        try {
+            $result['data'] = $this->loanService->getById($id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()()
+            ];
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  *
-    //  * @param  \App\Models\Loan  $loan
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroy(Loan $loan)
-    // {
-    //     //
-    // }
+        }
+
+        return response()->json($result, $result['status']);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $data = $request->only([
+            'loan_amount',
+            'loan_term',
+            'interest_rate'
+        ]);
+
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->loanService->updateLoan($data, $id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()()
+            ];
+
+        }
+
+        return response()->json($result, $result['status']);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->loanService->deleteById($id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
+    }
 }

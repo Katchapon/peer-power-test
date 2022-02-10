@@ -19,6 +19,12 @@ class LoanRepository
             ->get();
     }
 
+    public function getById($id)
+    {
+        return $this->loan
+            ->findOrFail($id);
+    }
+
     public function save($data)
     {
         $loan = new $this->loan;
@@ -28,5 +34,28 @@ class LoanRepository
         $loan->interest_rate = $data['interest_rate'];
 
         $loan->save();
+
+        return $loan;
+    }
+
+    public function update($data, $id)
+    {
+        $loan = $this->getById($id);
+
+        $loan->loan_amount = $data['loan_amount'];
+        $loan->loan_term = $data['loan_term'];
+        $loan->interest_rate = $data['interest_rate'];
+
+        $loan->save();
+
+        return $loan;
+    }
+
+    public function delete($id)
+    {
+        $loan = $this->getById($id);
+        $loan->delete();
+
+        return $loan;
     }
 }
