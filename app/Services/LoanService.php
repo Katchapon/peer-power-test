@@ -67,5 +67,7 @@ class LoanService
         }
 
         DB::commit();
+
+        return $loan;
     }
 }
