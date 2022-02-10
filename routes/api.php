@@ -16,8 +16,6 @@ use App\Http\Controllers\LoanController;
 |
 */
 
-// Route::resource('loans', LoanController::class)->only([
-//     'index', 'store'
-// ]);
-
-Route::apiResource('loans', LoanController::class);
+Route::apiResource('loans', LoanController::class)->parameters([
+    'loans' => 'id'
+]);
