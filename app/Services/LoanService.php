@@ -7,7 +7,9 @@ use App\Repositories\LoanRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use Illuminate\Validation\ValidationException;
 
 class LoanService
 {
@@ -30,6 +32,17 @@ class LoanService
 
     public function saveLoanData($data)
     {
+        $validator = Validator::make($data, [
+            'loan_amount' => 'required|numeric|between:1000,100000000',
+            'loan_term' => 'required|integer|between:1,50',
+            'interest_rate' => 'required|numeric|between:1,36',
+            'start_at' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
         $result = $this->loanRepository->save($data);
 
         return $result;

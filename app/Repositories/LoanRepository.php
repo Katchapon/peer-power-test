@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Loan;
+use DateTime;
+use Illuminate\Support\Carbon;
 
 class LoanRepository
 {
@@ -33,6 +35,7 @@ class LoanRepository
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
         $loan->interest_rate = $data['interest_rate'];
+        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
 
         $loan->save();
 
@@ -46,6 +49,7 @@ class LoanRepository
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
         $loan->interest_rate = $data['interest_rate'];
+        $loan->start_at = $data['start_at'];
 
         $loan->save();
 

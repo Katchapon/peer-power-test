@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\LoanService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class LoanController extends Controller
 {
@@ -28,10 +30,9 @@ class LoanController extends Controller
         try {
             $result['data'] = $this->loanService->getAll();
         } catch (Exception $e) {
-            $result = [
-                'status' => 500,
-                'error' => $e->getMessage()()
-            ];
+            $message = $e->getMessage();
+
+            return response()->json(['error' => $message], 500);
         }
 
         return response()->json($result, $result['status']);
@@ -48,19 +49,18 @@ class LoanController extends Controller
         $data = $request->only([
             'loan_amount',
             'loan_term',
-            'interest_rate'
+            'interest_rate',
+            'start_at'
         ]);
 
         $result = ['status' => 200];
 
         try {
             $result['data'] = $this->loanService->saveLoanData($data);
-        } catch (Exception $e) {
-            $result = [
-                'status' => 500,
-                'error' => $e->getMessage()()
-            ];
+        } catch (ValidationException $e) {
+            $message = $e->getMessage();
 
+            return response()->json(['error' => $message], 500);
         }
 
         return response()->json($result, $result['status']);
@@ -79,11 +79,9 @@ class LoanController extends Controller
         try {
             $result['data'] = $this->loanService->getById($id);
         } catch (Exception $e) {
-            $result = [
-                'status' => 500,
-                'error' => $e->getMessage()()
-            ];
+            $message = $e->getMessage();
 
+            return response()->json(['error' => $message], 500);
         }
 
         return response()->json($result, $result['status']);
@@ -101,7 +99,8 @@ class LoanController extends Controller
         $data = $request->only([
             'loan_amount',
             'loan_term',
-            'interest_rate'
+            'interest_rate',
+            'start_at'
         ]);
 
         $result = ['status' => 200];
@@ -132,10 +131,9 @@ class LoanController extends Controller
         try {
             $result['data'] = $this->loanService->deleteById($id);
         } catch (Exception $e) {
-            $result = [
-                'status' => 500,
-                'error' => $e->getMessage()()
-            ];
+            $message = $e->getMessage();
+
+            return response()->json(['error' => $message], 500);
         }
 
         return response()->json($result, $result['status']);
