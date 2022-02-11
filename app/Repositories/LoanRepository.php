@@ -44,12 +44,12 @@ class LoanRepository
 
     public function update($data, $id)
     {
-        $loan = $this->getById($id);
+        $loan = $this->loan->findOrFail($id);
 
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
         $loan->interest_rate = $data['interest_rate'];
-        $loan->start_at = $data['start_at'];
+        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
 
         $loan->save();
 
