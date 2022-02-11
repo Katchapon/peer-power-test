@@ -55,7 +55,7 @@ class LoanService
         } catch (Exception $e) {
             DB::rollBack();
 
-            throw new InvalidArgumentException('Unable to create loan');
+            throw new InvalidArgumentException($e->getMessage());
         }
         
         DB::commit();
@@ -85,6 +85,17 @@ class LoanService
 
     public function updateLoan($data, $id)
     {
+        $validator = Validator::make($data, [
+            'loan_amount' => 'required|numeric|between:1000,100000000',
+            'loan_term' => 'required|integer|between:1,50',
+            'interest_rate' => 'required|numeric|between:1,36',
+            'start_at' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
         DB::beginTransaction();
 
         try {
@@ -92,7 +103,6 @@ class LoanService
             $this->createRepaymentSchedules($loan);
         } catch (Exception $e) {
             DB::rollback();
-            Log::info($e->getMessage());
 
             throw new InvalidArgumentException($e->getMessage());
         }
@@ -110,9 +120,8 @@ class LoanService
             $loan = $this->loanRepository->delete($id);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete loan data');
+            throw new InvalidArgumentException($e->getMessage());
         }
 
         DB::commit();
