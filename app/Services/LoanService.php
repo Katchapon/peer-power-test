@@ -4,14 +4,13 @@ namespace App\Services;
 
 use App\Models\Loan;
 use App\Repositories\LoanRepository;
-use App\Models\RepaymentSchedule;
 use App\Repositories\RepaymentScheduleRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Validation\ValidationException;
+use App\Helpers\PMTHelper;
 
 class LoanService
 {
@@ -67,17 +66,17 @@ class LoanService
     {
         $loan->repaymentSchedules()->delete();
 
-        $totalPaymentNo = $loan->getTotalPaymentNo();
-        $interestPerYear = $loan->getInterestPerYear();
-        $outstandingBalance = round($loan->loan_amount, 2);
+        $pmt = PMTHelper::calculatePMT($loan->interest_rate, $loan->loan_amount, $loan->loan_term);
+        $totalPaymentNo = $loan->loan_term * 12;
+        $outstandingBalance = $loan->loan_amount;
         $paidDate = $loan->start_at;
 
         for ($i = 1; $i<=$totalPaymentNo; $i++) {
-            $interest = round(($interestPerYear/12) * $outstandingBalance, 2);
-            $principal = round($loan->getPMT() - $interest, 2);
-            $outstandingBalance = max(round($outstandingBalance - $principal, 2), 0);
+            $interest = PMTHelper::calculateInterest($loan->interest_rate, $outstandingBalance);
+            $principal = PMTHelper::calculatePrincipal($pmt, $interest);
+            $outstandingBalance = max(($outstandingBalance - $principal), 0);
 
-            $this->repaymentScheduleRepository->save($loan, $i, $paidDate, $loan->getPMT(), $principal, $interest, $outstandingBalance);
+            $this->repaymentScheduleRepository->save($loan, $i, $paidDate, $pmt, $principal, $interest, $outstandingBalance);
 
             $paidDate = $paidDate->addMonth();
         }
