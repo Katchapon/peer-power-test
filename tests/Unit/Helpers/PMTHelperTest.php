@@ -2,26 +2,26 @@
 
 namespace Tests\Unit\Helpers;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use App\Helpers\PMTHelper;
 
 class PMTHelperTest extends TestCase
 {
-    public function testCalculate_pmt_expectResultCorrect()
+    public function testCalculatePMT()
     {
         $pmt = PMTHelper::calculatePMT(10, 10000, 1);
 
         $this->assertEquals(879.16, round($pmt, 2));
     }
 
-    public function testCalculate_interest_expectResultCorrect()
+    public function testCalculateInterest()
     {
         $interest = PMTHelper::calculateInterest(10, 10000);
 
         $this->assertEquals(83.33, round($interest, 2));
     }
 
-    public function testCalculate_principle_expectResultCorrect()
+    public function testCalculatePrinciple()
     {
         $pmt = PMTHelper::calculatePMT(10, 10000, 1);
         $interest = PMTHelper::calculateInterest(10, 10000);
