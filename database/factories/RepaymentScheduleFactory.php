@@ -17,7 +17,12 @@ class RepaymentScheduleFactory extends Factory
     public function definition()
     {
         return [
-            
+            'payment_no' => $this->faker->numberBetween(1, 100),
+            'date' => $this->faker->dateTime(),
+            'payment_amount' => $this->faker->randomFloat(6),
+            'principal' => $this->faker->randomFloat(6),
+            'interest' => $this->faker->randomFloat(6, 0, 100),
+            'balance' => $this->faker->randomFloat(6)
         ];
     }
 }

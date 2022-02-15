@@ -5,6 +5,8 @@ namespace Tests\Unit\Services;
 use Tests\TestCase;
 use App\Services\LoanService;
 use App\Models\Loan;
+use App\Models\RepaymentSchedule;
+use Database\Factories\RepaymentScheduleFactory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class LoanServiceTest extends TestCase
@@ -34,5 +36,36 @@ class LoanServiceTest extends TestCase
         $this->assertEquals($data['loan_amount'], $loan->loan_amount);
         $this->assertEquals($data['loan_term'], $loan->loan_term);
         $this->assertEquals($data['interest_rate'], $loan->interest_rate);
+    }
+
+    public function testGetLoans()
+    {
+        $loans = Loan::factory()->count(5)->create();
+
+        $result = $this->loanService->getAll();
+
+        $this->assertEquals(count($loans), count($result));
+        $this->assertEquals($loans[0]->loan_amount, $result[0]->loan_amount);
+    }
+
+    public function testGetLoanById()
+    {
+        $loan = Loan::factory()
+                    ->has(RepaymentSchedule::factory()->count(12))
+                    ->create();
+
+        $result = $this->loanService->getById($loan->id);
+
+        $this->assertEquals($loan->loan_amount, $result->loan_amount);
+        $this->assertEquals($loan->repaymentSchedules()->count(), $result->repaymentSchedules()->count());
+    }
+
+    public function testDeleteLoan()
+    {
+        $loans = Loan::factory()->count(5)->create();
+
+        $result = $this->loanService->deleteById($loans[0]->id);
+        
+        $this->assertDatabaseMissing('loans', ['id' => $result->id]);
     }
 }
