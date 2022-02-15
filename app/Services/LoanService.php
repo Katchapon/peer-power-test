@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Validation\ValidationException;
 use App\Helpers\PMTHelper;
+use App\Helpers\RepaymentScheduleHelper;
 
 class LoanService
 {
@@ -50,7 +51,9 @@ class LoanService
 
         try {
             $result = $this->loanRepository->save($data);
-            $this->createRepaymentSchedules($result);
+
+            $repaymentSchedules = RepaymentScheduleHelper::generateRepaymentSchedules($result);
+            $this->repaymentScheduleRepository->save($result, $repaymentSchedules);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -61,27 +64,7 @@ class LoanService
 
         return $result;
     }
-
-    private function createRepaymentSchedules(Loan $loan)
-    {
-        $loan->repaymentSchedules()->delete();
-
-        $pmt = PMTHelper::calculatePMT($loan->interest_rate, $loan->loan_amount, $loan->loan_term);
-        $totalPaymentNo = $loan->loan_term * 12;
-        $outstandingBalance = $loan->loan_amount;
-        $paidDate = $loan->start_at;
-
-        for ($i = 1; $i<=$totalPaymentNo; $i++) {
-            $interest = PMTHelper::calculateInterest($loan->interest_rate, $outstandingBalance);
-            $principal = PMTHelper::calculatePrincipal($pmt, $interest);
-            $outstandingBalance = max(($outstandingBalance - $principal), 0);
-
-            $this->repaymentScheduleRepository->save($loan, $i, $paidDate, $pmt, $principal, $interest, $outstandingBalance);
-
-            $paidDate = $paidDate->addMonth();
-        }
-    }
-
+    
     public function updateLoan($data, $id)
     {
         $validator = Validator::make($data, [
@@ -99,7 +82,10 @@ class LoanService
 
         try {
             $loan = $this->loanRepository->update($data, $id);
-            $this->createRepaymentSchedules($loan);
+            $repaymentSchedules = RepaymentScheduleHelper::generateRepaymentSchedules($loan);
+
+            $loan->repaymentSchedules()->delete();
+            $this->repaymentScheduleRepository->save($loan, $repaymentSchedules);
         } catch (Exception $e) {
             DB::rollback();
 
