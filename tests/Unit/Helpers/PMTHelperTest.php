@@ -7,21 +7,21 @@ use App\Helpers\PMTHelper;
 
 class PMTHelperTest extends TestCase
 {
-    public function testCalculatePMT()
+    public function test_calculate_PMT()
     {
         $pmt = PMTHelper::calculatePMT(0.1, 10000, 12);
 
         $this->assertEquals(879.16, round($pmt, 2));
     }
 
-    public function testCalculateInterest()
+    public function test_calculate_interest()
     {
         $interest = PMTHelper::calculateInterest(0.1, 10000);
 
         $this->assertEquals(83.33, round($interest, 2));
     }
 
-    public function testCalculatePrinciple()
+    public function test_calculate_principle()
     {
         $principal = PMTHelper::calculatePrincipal(879.158872, 83.333333);
 
