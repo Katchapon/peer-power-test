@@ -29,12 +29,12 @@ class LoanService
         return $this->loanRepository->getAll();
     }
 
-    public function getById($id)
+    public function getById(int $id)
     {
         return $this->loanRepository->getById($id);
     }
 
-    public function saveLoanData($data)
+    public function saveLoanData(array $data)
     {
         DB::beginTransaction();
 
@@ -54,7 +54,7 @@ class LoanService
         return $result;
     }
     
-    public function updateLoan($data, $id)
+    public function updateLoan(array $data, int $id)
     {
         DB::beginTransaction();
 
@@ -75,7 +75,7 @@ class LoanService
         return $loan;
     }
 
-    public function deleteById($id)
+    public function deleteById(int $id)
     {
         DB::beginTransaction();
 

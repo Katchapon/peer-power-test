@@ -14,7 +14,7 @@ class RepaymentScheduleRepository
         $this->repaymentSchedule = $repaymentSchedule;
     }
 
-    public function save(Loan $loan, $datas)
+    public function save(Loan $loan, array $datas)
     {
         $loan->repaymentSchedules()->createMany($datas);
     }

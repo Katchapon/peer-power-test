@@ -21,21 +21,21 @@ class LoanRepository
             ->get();
     }
 
-    public function getById($id)
+    public function getById(int $id)
     {
         return $this->loan
             ->with('repaymentSchedules')
             ->findOrFail($id);
     }
 
-    public function save($data)
+    public function save(array $data)
     {
         $loan = Loan::create($data);
 
         return $loan;
     }
 
-    public function update($data, $id)
+    public function update(array $data, int $id)
     {
         $loan = $this->loan->findOrFail($id);
 
@@ -44,7 +44,7 @@ class LoanRepository
         return $loan;
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
         $loan = $this->getById($id);
         $loan->delete();

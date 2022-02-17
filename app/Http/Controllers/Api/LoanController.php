@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Arr;
@@ -29,17 +30,15 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $result = ['status' => 200];
-
         try {
             $result['data'] = $this->loanService->getAll();
         } catch (Exception $e) {
             $message = $e->getMessage();
 
-            return response()->json(['error' => $message], 500);
+            return response()->json(['error' => $message]);
         }
 
-        return response()->json($result, $result['status']);
+        return response()->json($result);
     }
 
     /**
@@ -65,18 +64,11 @@ class LoanController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()]);
+            throw new ValidationException($validator);
         }
 
         $data = $this->prepareData($data);
-
-        try {
-            $result['data'] = $this->loanService->saveLoanData($data);
-        } catch (ValidationException $e) {
-            $message = $e->getMessage();
-
-            return response()->json(['error' => $message]);
-        }
+        $result['data'] = $this->loanService->saveLoanData($data);
 
         return response()->json($result);
     }
@@ -89,16 +81,7 @@ class LoanController extends Controller
      */
     public function show($id)
     {
-        
-        $result = ['status' => 200];
-
-        try {
-            $result['data'] = $this->loanService->getById($id);
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-
-            return response()->json(['error' => $message], 500);
-        }
+        $result['data'] = $this->loanService->getById($id);
 
         return response()->json($result, $result['status']);
     }
@@ -126,19 +109,11 @@ class LoanController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()]);
+            throw new ValidationException($validator);
         }
 
         $data = $this->prepareData($data);
-
-        try {
-            $result['data'] = $this->loanService->updateLoan($data, $id);
-        } catch (Exception $e) {
-            $result = [
-                'error' => $e->getMessage()()
-            ];
-
-        }
+        $result['data'] = $this->loanService->updateLoan($data, $id);
 
         return response()->json($result);
     }
@@ -151,15 +126,7 @@ class LoanController extends Controller
      */
     public function destroy($id)
     {
-        $result = ['status' => 200];
-
-        try {
-            $result['data'] = $this->loanService->deleteById($id);
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-
-            return response()->json(['error' => $message], 500);
-        }
+        $result['data'] = $this->loanService->deleteById($id);
 
         return response()->json($result, $result['status']);
     }
