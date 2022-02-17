@@ -83,7 +83,7 @@ class LoanController extends Controller
     {
         $result['data'] = $this->loanService->getById($id);
 
-        return response()->json($result, $result['status']);
+        return response()->json($result);
     }
 
     /**
@@ -128,7 +128,7 @@ class LoanController extends Controller
     {
         $result['data'] = $this->loanService->deleteById($id);
 
-        return response()->json($result, $result['status']);
+        return response()->json($result);
     }
 
     private function prepareData($data)
