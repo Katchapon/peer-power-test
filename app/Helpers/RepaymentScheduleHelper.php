@@ -11,11 +11,10 @@ class RepaymentScheduleHelper
     public static function generateRepaymentSchedules(Loan $loan)
     {
         $pmt = PMTHelper::calculatePMT($loan->interest_rate, $loan->loan_amount, $loan->loan_term);
-        $totalPaymentNo = $loan->loan_term * 12;
         $outstandingBalance = $loan->loan_amount;
         $results = [];
 
-        for ($i = 1; $i<=$totalPaymentNo; $i++) {
+        for ($i = 1; $i<=$loan->loan_term; $i++) {
             $interest = PMTHelper::calculateInterest($loan->interest_rate, $outstandingBalance);
             $principal = PMTHelper::calculatePrincipal($pmt, $interest);
             $outstandingBalance = $outstandingBalance - $principal;
