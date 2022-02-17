@@ -30,14 +30,7 @@ class LoanRepository
 
     public function save($data)
     {
-        $loan = new $this->loan;
-
-        $loan->loan_amount = $data['loan_amount'];
-        $loan->loan_term = $data['loan_term'];
-        $loan->interest_rate = $data['interest_rate'];
-        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
-
-        $loan->save();
+        $loan = Loan::create($data);
 
         return $loan;
     }
@@ -46,12 +39,7 @@ class LoanRepository
     {
         $loan = $this->loan->findOrFail($id);
 
-        $loan->loan_amount = $data['loan_amount'];
-        $loan->loan_term = $data['loan_term'];
-        $loan->interest_rate = $data['interest_rate'];
-        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
-
-        $loan->save();
+        $loan->update($data);
 
         return $loan;
     }

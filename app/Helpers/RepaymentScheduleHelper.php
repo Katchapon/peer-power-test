@@ -18,7 +18,7 @@ class RepaymentScheduleHelper
         for ($i = 1; $i<=$totalPaymentNo; $i++) {
             $interest = PMTHelper::calculateInterest($loan->interest_rate, $outstandingBalance);
             $principal = PMTHelper::calculatePrincipal($pmt, $interest);
-            $outstandingBalance = max(($outstandingBalance - $principal), 0);
+            $outstandingBalance = $outstandingBalance - $principal;
             $paidDate = $loan->start_at->addMonth($i-1)->copy();
 
             $results[] = [

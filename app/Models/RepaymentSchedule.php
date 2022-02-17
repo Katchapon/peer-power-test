@@ -14,7 +14,7 @@ class RepaymentSchedule extends Model
     ];
 
     protected $casts = [
-        'date' => 'datetime:Y-m-d\TH:i:sO'
+        'date' => 'datetime'
     ];
 
     public function loan()

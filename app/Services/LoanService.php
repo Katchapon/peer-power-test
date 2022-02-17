@@ -36,17 +36,6 @@ class LoanService
 
     public function saveLoanData($data)
     {
-        $validator = Validator::make($data, [
-            'loan_amount' => 'required|numeric|between:1000,100000000',
-            'loan_term' => 'required|integer|between:1,50',
-            'interest_rate' => 'required|numeric|between:1,36',
-            'start_at' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
         DB::beginTransaction();
 
         try {
@@ -67,17 +56,6 @@ class LoanService
     
     public function updateLoan($data, $id)
     {
-        $validator = Validator::make($data, [
-            'loan_amount' => 'required|numeric|between:1000,100000000',
-            'loan_term' => 'required|integer|between:1,50',
-            'interest_rate' => 'required|numeric|between:1,36',
-            'start_at' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
         DB::beginTransaction();
 
         try {

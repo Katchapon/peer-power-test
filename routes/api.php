@@ -16,6 +16,4 @@ use App\Http\Controllers\Api\LoanController;
 |
 */
 
-Route::apiResource('loans', LoanController::class)->parameters([
-    'loans' => 'id'
-]);
+Route::apiResource('loans', LoanController::class);
