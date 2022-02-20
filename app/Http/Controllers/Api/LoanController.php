@@ -30,13 +30,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        try {
-            $result['data'] = $this->loanService->getAll();
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-
-            return response()->json(['error' => $message]);
-        }
+        $result['data'] = $this->loanService->getAll();
 
         return response()->json($result);
     }
@@ -56,16 +50,12 @@ class LoanController extends Controller
             'start_at'
         ]);
 
-        $validator = Validator::make($data, [
+        $request->validate([
             'loan_amount' => 'required|numeric|between:1000,100000000',
             'loan_term' => 'required|integer|between:1,50',
             'interest_rate' => 'required|numeric|between:1,36',
             'start_at' => 'required'
         ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
 
         $data = $this->prepareData($data);
         $result['data'] = $this->loanService->saveLoanData($data);
@@ -102,15 +92,11 @@ class LoanController extends Controller
             'start_at'
         ]);
 
-        $validator = Validator::make($data, [
+        $request->validate([
             'loan_amount' => 'numeric|between:1000,100000000',
             'loan_term' => 'integer|between:1,50',
             'interest_rate' => 'numeric|between:1,36',
         ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
 
         $data = $this->prepareData($data);
         $result['data'] = $this->loanService->updateLoan($data, $id);

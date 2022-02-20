@@ -12,14 +12,17 @@ use InvalidArgumentException;
 use Illuminate\Validation\ValidationException;
 use App\Helpers\PMTHelper;
 use App\Helpers\RepaymentScheduleHelper;
+use App\Repositories\UserRepoInterface;
 
 class LoanService
 {
     protected $loanRepository;
     protected $repaymentScheduleRepository;
 
-    public function __construct(LoanRepository $loanRepository, RepaymentScheduleRepository $repaymentScheduleRepository)
-    {
+    public function __construct(
+        LoanRepository $loanRepository, 
+        RepaymentScheduleRepository $repaymentScheduleRepository
+    ) {
         $this->loanRepository = $loanRepository;
         $this->repaymentScheduleRepository = $repaymentScheduleRepository;
     }
@@ -36,59 +39,38 @@ class LoanService
 
     public function saveLoanData(array $data)
     {
-        DB::beginTransaction();
 
-        try {
+        return DB::transaction(function () use ($data) {
+
             $result = $this->loanRepository->save($data);
 
             $repaymentSchedules = RepaymentScheduleHelper::generateRepaymentSchedules($result);
             $this->repaymentScheduleRepository->save($result, $repaymentSchedules);
-        } catch (Exception $e) {
-            DB::rollBack();
 
-            throw new InvalidArgumentException($e->getMessage());
-        }
-        
-        DB::commit();
-
-        return $result;
+            return $result;
+        });
     }
     
     public function updateLoan(array $data, int $id)
     {
-        DB::beginTransaction();
 
-        try {
+        return DB::transaction(function () use ($data, $id) {
             $loan = $this->loanRepository->update($data, $id);
             $repaymentSchedules = RepaymentScheduleHelper::generateRepaymentSchedules($loan);
 
             $loan->repaymentSchedules()->delete();
             $this->repaymentScheduleRepository->save($loan, $repaymentSchedules);
-        } catch (Exception $e) {
-            DB::rollback();
 
-            throw new InvalidArgumentException($e->getMessage());
-        }
-
-        DB::commit();
-
-        return $loan;
+            return $loan;
+        });
     }
 
     public function deleteById(int $id)
     {
-        DB::beginTransaction();
-
-        try {
+        return DB::transaction(function () use ($id) {
             $loan = $this->loanRepository->delete($id);
-        } catch (Exception $e) {
-            DB::rollBack();
 
-            throw new InvalidArgumentException($e->getMessage());
-        }
-
-        DB::commit();
-
-        return $loan;
+            return $loan;
+        });
     }
 }
