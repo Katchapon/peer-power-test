@@ -27,9 +27,9 @@ class LoanService
         $this->repaymentScheduleRepository = $repaymentScheduleRepository;
     }
 
-    public function getAll()
+    public function getAll(array $query)
     {
-        return $this->loanRepository->getAll();
+        return $this->loanRepository->getAll($query);
     }
 
     public function getById(int $id)

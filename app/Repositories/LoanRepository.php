@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Loan;
 use DateTime;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 
 class LoanRepository
@@ -15,10 +16,17 @@ class LoanRepository
         $this->loan = $loan;
     }
 
-    public function getAll()
+    public function getAll(array $query)
     {
-        return $this->loan
-            ->get();
+        if (count($query) == 0) {
+            return $this->loan->get();
+        } else {
+
+            $loan = $this->loan;
+            $loan = $loan->whereBetween('loan_amount', array($query['min_loan_amount'], $query['max_loan_amount']));
+
+            return $loan->get();
+        }
     }
 
     public function getById(int $id)

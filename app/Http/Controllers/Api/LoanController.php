@@ -28,9 +28,25 @@ class LoanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $result['data'] = $this->loanService->getAll();
+        $minLoanAmount = $request->query('min_loan_amount', 1000);
+        $maxLoanAmount = $request->query('max_loan_amount', 100000000);
+        $minLoanTerm = $request->query('min_loan_term', 1);
+        $maxLoanTerm = $request->query('max_loan_term', 50);
+        $minInterestRate = $request->query('min_interest_rate', 1);
+        $maxInterestRate = $request->query('max_interest_rate', 36);
+
+        $query = [
+            'min_loan_amount' => $minLoanAmount,
+            'max_loan_amount' => $maxLoanAmount,
+            'min_loan_term' => $minLoanTerm * 12,
+            'max_loan_term' => $maxLoanTerm * 12,
+            'min_interest_rate' => $minInterestRate / 100,
+            'max_interest_rate' => $maxInterestRate / 100
+        ];
+
+        $result['data'] = $this->loanService->getAll($query);
 
         return response()->json($result);
     }
