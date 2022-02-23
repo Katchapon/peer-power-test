@@ -33,7 +33,7 @@ class LoanServiceTest extends TestCase
         $mockedRepaymentScheduleRepo = Mockery::mock(RepaymentScheduleRepository::class, function (MockInterface $mock) {
             $mock->shouldReceive('save')->once();
         });
-
+        
         $this->app->instance(LoanRepository::class, $mockedLoanRepo);
         $this->app->instance(RepaymentScheduleRepository::class, $mockedRepaymentScheduleRepo);
 

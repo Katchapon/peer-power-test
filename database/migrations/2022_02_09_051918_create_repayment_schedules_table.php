@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::table('repayment_schedules', function (Blueprint $table) {
-            $table->foreignId('loan_id')->constrained();
+            $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
         });
     }
 

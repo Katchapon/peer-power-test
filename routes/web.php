@@ -15,12 +15,6 @@ use App\Services\LoanService;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/test', function () {
-    $service = App::make(LoanService::class);
-
-    dd($service->users());
-});
+Route::get('{any}', function () {
+    return view('app');
+})->where('any', '.*');
