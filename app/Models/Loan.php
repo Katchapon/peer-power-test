@@ -14,7 +14,8 @@ class Loan extends Model
     ];
 
     protected $casts = [
-        'start_at' => 'datetime'
+        'start_at' => 'datetime',
+        'loan_amount' => 'float'
     ];
 
     public function repaymentSchedules() 

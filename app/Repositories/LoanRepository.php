@@ -23,7 +23,9 @@ class LoanRepository
         } else {
 
             $loan = $this->loan;
-            $loan = $loan->whereBetween('loan_amount', array($query['min_loan_amount'], $query['max_loan_amount']));
+            $loan = $loan->whereBetween('loan_amount', [$query['min_loan_amount'], $query['max_loan_amount']]);
+            $loan = $loan->whereBetween('loan_term', [$query['min_loan_term'], $query['max_loan_term']]);
+            $loan = $loan->whereBetween('interest_rate', [$query['min_interest_rate'], $query['max_interest_rate']]);
 
             return $loan->get();
         }

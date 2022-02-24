@@ -13,37 +13,40 @@ export default {
         }
     },
     mounted() {
-            this.axios
-                .get(`http://localhost/api/loans/${this.$route.params.id}`)
-                .then(response => {
-                    this.loan = response.data.data,
-                    this.alreadyGetData = true
-                })
+        this.getLoanDetail()
     },
     methods: {
-        editLoan(loanForm) {
-            this.axios
-                .put(`/api/loans/${this.loan.id}`, {
-                    loan_amount: Number(loanForm.loan_amount),
-                    loan_term: Number(loanForm.loan_term),
-                    interest_rate: Number(loanForm.interest_rate),
-                    start_at: moment(loanForm.start_month + " " + loanForm.start_year).format('')
-                })
-                .then(response => {
-                    this.$router.push({ name: "view", params: { id: response.data.data.id } })
-                })
-                .catch(err => {
-                    if (err.response.data.errors) {
-                        var errMsg = ""
-                        for (const [_, value] of Object.entries(err.response.data.errors)) {
-                            errMsg += value + "\n"
-                        }
-                        alert(errMsg)
-                    } else {
-                        alert("Can't update item");
+        async getLoanDetail() {
+            try {
+                const res = await this.axios.get(`http://localhost/api/loans/${this.$route.params.id}`)
+
+                this.loan = res.data.data
+                this.alreadyGetData = true
+            } catch (err) {
+                alert(err)
+            }
+        },
+        async editLoan(loanForm) {
+            try {
+                const res = await this.axios
+                                    .put(`/api/loans/${this.loan.id}`, {
+                                        loan_amount: Number(loanForm.loan_amount),
+                                        loan_term: Number(loanForm.loan_term),
+                                        interest_rate: Number(loanForm.interest_rate),
+                                        start_at: moment(loanForm.start_month + " " + loanForm.start_year).format('')
+                                    })
+                this.$router.push({ name: "view", params: { id: res.data.data.id } })
+            } catch (err) {
+                if (err.response.data.errors) {
+                    var errMsg = ""
+                    for (const [_, value] of Object.entries(err.response.data.errors)) {
+                        errMsg += value + "\n"
                     }
-                })
-                .finally(() => (this.loading = false));
+                    alert(errMsg)
+                } else {
+                    alert("Can't update item");
+                }                
+            }
         }
     }
 }

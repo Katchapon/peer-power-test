@@ -1,9 +1,13 @@
 <script>
     import LoanItem from './LoanItem.vue'
+    import SearchForm from './SearchForm.vue'
+    import LoanTable from './LoanTable.vue'
 
     export default {
         components: {
-            LoanItem
+            LoanItem,
+            SearchForm,
+            LoanTable
         },
         data() {
             return {
@@ -11,24 +15,31 @@
             }
         },
         created() {
-            this.axios
-                .get(`http://localhost/api/loans/`)
-                .then(response => {
-                    console.log(response.data.data)
-                    this.loans = response.data.data
-                })
+            this.getLoans()
+        },
+        mounted() {
+            // this.getLoans()
         },
         methods: {
-            deleteLoan(id) {
+            async getLoans() {
+                try {
+                    const res = await this.axios.get(`http://localhost/api/loans/`)
+
+                    this.loans = res.data.data
+                } catch (err) {
+                    alert('Error! Could not reach the API.')
+                }
+            },
+            async deleteLoan(id) {
                 if (confirm(`Do you really want to delete Loan ID: ${id}?`)) {
-                    this.axios
-                        .delete(`http://localhost/api/loans/${id}`)
-                        .then(response => {
-                            let i = this.loans.map(data => data.id).indexOf(id);
-                            this.loans.splice(i, 1);
-                            alert(`Deleting Loan ID: ${id}`)
-                        })
-                        .catch(err => {
+                    try {
+                        const res = await this.axios
+                                              .delete(`http://localhost/api/loans/${id}`)
+
+                        let i = this.loans.map(data => data.id).indexOf(id)
+                        this.loans.splice(i, 1)
+                        alert(`Deleting Loan ID: ${id}`)
+                    } catch (err) {
                             if (err.response.data.errors) {
                                 var errMsg = ""
                                 for (const [_, value] of Object.entries(err.response.data.errors)) {
@@ -36,11 +47,43 @@
                                 }
                                 alert(errMsg)
                             } else {
-                                alert("Can't delete item");
-                            }
-                        })
-                        .finally(() => (this.loading = false));                        
+                                alert("Can't delete item")
+                            }                        
+                    }                      
                 }
+            },
+            async searchLoan(searchForm) {
+                try {
+                    const res = await this.axios
+                                            .get(`http://localhost/api/loans/`, {
+                                                params: {
+                                                    min_loan_amount: searchForm.loanAmount.min,
+                                                    max_loan_amount: searchForm.loanAmount.max,
+                                                    min_loan_term: searchForm.loanTerm.min,
+                                                    max_loan_term: searchForm.loanTerm.max,
+                                                    min_interest_rate: searchForm.interestRate.min,
+                                                    max_interest_rate: searchForm.interestRate.max
+                                                }
+                                            })
+
+                    this.loans = res.data.data
+                } catch (err) {
+                    alert("Can't search loans")
+                }
+                this.axios
+                .get(`http://localhost/api/loans/`, {
+                    params: {
+                        min_loan_amount: searchForm.loanAmount.min,
+                        max_loan_amount: searchForm.loanAmount.max,
+                        min_loan_term: searchForm.loanTerm.min,
+                        max_loan_term: searchForm.loanTerm.max,
+                        min_interest_rate: searchForm.interestRate.min,
+                        max_interest_rate: searchForm.interestRate.max
+                    }
+                })
+                .then(response => {
+                    this.loans = response.data.data
+                })
             }
         }
     }
@@ -58,32 +101,12 @@
             </div>     
         </div>   
         <div class="collapse" id="collapseExample">
-            <div class="card card-body">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-            </div>
-        </div>  
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Loan Amount</th>
-                    <th>Loan Term</th>
-                    <th>Interest Rate</th>
-                    <th>Created at</th>
-                    <th>Edit</th>
-                </tr>
-            </thead>
-            <tbody v-if="loans.length">
-                <LoanItem
-                 v-for="loan in loans"
-                 :loan="loan"
-                 :key="loan.id"
-                 @delete-loan="deleteLoan(loan.id)">
-                </LoanItem>
-            </tbody>
-            <tbody v-else>
-                <p>Loan is empty.</p>
-            </tbody>
-        </table>
+            <SearchForm @searchSubmit="searchLoan"></SearchForm>
+        </div>
+        <LoanTable
+            :loans="loans"
+            @delete-loan="deleteLoan"
+        >
+        </LoanTable>
     </div>
 </template>
