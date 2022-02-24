@@ -14,6 +14,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->app->bind(
+            \App\Repositories\UserRepoInterface::class,
+            \App\Repositories\MongoUserRepo::class,
+        );
     }
 
     /**

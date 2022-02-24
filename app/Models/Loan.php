@@ -9,8 +9,13 @@ class Loan extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'loan_amount', 'loan_term', 'interest_rate', 'start_at'
+    ];
+
     protected $casts = [
-        'start_at' => 'datetime:Y-m-d\TH:i:sO'
+        'start_at' => 'datetime',
+        'loan_amount' => 'float'
     ];
 
     public function repaymentSchedules() 

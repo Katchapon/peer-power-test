@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
-use App\Http\Controllers\LoanController;
+use App\Http\Controllers\Api\LoanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +16,4 @@ use App\Http\Controllers\LoanController;
 |
 */
 
-Route::apiResource('loans', LoanController::class)->parameters([
-    'loans' => 'id'
-]);
+Route::apiResource('loans', LoanController::class);

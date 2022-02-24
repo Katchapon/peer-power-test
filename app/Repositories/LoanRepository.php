@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Loan;
 use DateTime;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 
 class LoanRepository
@@ -15,48 +16,45 @@ class LoanRepository
         $this->loan = $loan;
     }
 
-    public function getAll()
+    public function getAll(array $query)
     {
-        return $this->loan
-            ->get();
+        if (count($query) == 0) {
+            return $this->loan->get();
+        } else {
+
+            $loan = $this->loan;
+            $loan = $loan->whereBetween('loan_amount', [$query['min_loan_amount'], $query['max_loan_amount']]);
+            $loan = $loan->whereBetween('loan_term', [$query['min_loan_term'], $query['max_loan_term']]);
+            $loan = $loan->whereBetween('interest_rate', [$query['min_interest_rate'], $query['max_interest_rate']]);
+
+            return $loan->get();
+        }
     }
 
-    public function getById($id)
+    public function getById(int $id)
     {
         return $this->loan
             ->with('repaymentSchedules')
             ->findOrFail($id);
     }
 
-    public function save($data)
+    public function save(array $data)
     {
-        $loan = new $this->loan;
-
-        $loan->loan_amount = $data['loan_amount'];
-        $loan->loan_term = $data['loan_term'];
-        $loan->interest_rate = $data['interest_rate'];
-        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
-
-        $loan->save();
+        $loan = Loan::create($data);
 
         return $loan;
     }
 
-    public function update($data, $id)
+    public function update(array $data, int $id)
     {
         $loan = $this->loan->findOrFail($id);
 
-        $loan->loan_amount = $data['loan_amount'];
-        $loan->loan_term = $data['loan_term'];
-        $loan->interest_rate = $data['interest_rate'];
-        $loan->start_at = Carbon::createFromFormat('Y-m-d\TH:i:sO', $data['start_at']);
-
-        $loan->save();
+        $loan->update($data);
 
         return $loan;
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
         $loan = $this->getById($id);
         $loan->delete();

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('loan_amount', 21, 6);
             $table->unsignedInteger('loan_term');
             $table->decimal('interest_rate', 21, 6);
-            $table->dateTime('start_at');
+            $table->date('start_at');
             $table->timestamps();
         });
     }

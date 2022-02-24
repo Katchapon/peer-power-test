@@ -9,8 +9,12 @@ class RepaymentSchedule extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'payment_no', 'date', 'payment_amount', 'principal', 'interest', 'balance'
+    ];
+
     protected $casts = [
-        'date' => 'datetime:Y-m-d\TH:i:sO'
+        'date' => 'datetime'
     ];
 
     public function loan()

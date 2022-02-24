@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Loan>
@@ -17,10 +18,10 @@ class LoanFactory extends Factory
     public function definition()
     {
         return [
-            'loan_amount' => $this->faker->randomFloat(6, 0, 100000000),
-            'loan_term' => $this->faker->numberBetween(1, 50),
-            'interest_rate' => $this->faker->randomFloat(6, 1, 36),
-            'start_at' => $this->faker->dateTime
+            'loan_amount' => 10000,
+            'loan_term' => 12,
+            'interest_rate' => 0.1,
+            'start_at' => Carbon::createFromDate(2022, 1, 1)
         ];
     }
 }

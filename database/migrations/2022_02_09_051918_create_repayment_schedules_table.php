@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('repayment_schedules', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('payment_no');
-            $table->dateTime('date');
+            $table->date('date');
             $table->decimal('payment_amount', 21, 6);
             $table->decimal('principal', 21, 6);
             $table->decimal('interest', 21, 6);
@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::table('repayment_schedules', function (Blueprint $table) {
-            $table->foreignId('loan_id')->constrained();
+            $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
         });
     }
 
